@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mastermind: Code Breaker</title>
     <style>
         :root {
@@ -39,29 +39,31 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* --- RESPONSIVE BODY LAYOUT --- */
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
+            /* Flexbox Vertical Layout to fix footer to bottom */
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
-            overflow: hidden;
+            height: 100vh; /* Force full viewport height */
+            width: 100%;
+            overflow: hidden; /* Prevent body scroll, let inner elements scroll */
         }
 
-        /* --- Header & Layout --- */
+        /* --- Header --- */
         header {
             text-align: center;
-            margin-bottom: 1rem;
             animation: fadeInDown 0.8s ease;
+            flex-shrink: 0; /* Prevent header from shrinking */
             width: 100%;
-            max-width: 500px;
-            flex-shrink: 0;
+            padding: 0.5rem 1rem;
+            z-index: 10;
+            background-color: var(--bg-color);
         }
 
         h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin-bottom: 0.5rem;
             background: linear-gradient(90deg, var(--highlight-color), var(--c-purple));
             -webkit-background-clip: text;
@@ -72,8 +74,8 @@
 
         .subtitle {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
         }
 
         /* Rules Section */
@@ -81,10 +83,10 @@
             display: flex;
             justify-content: center;
             gap: 1rem;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             background: rgba(255,255,255,0.03);
-            padding: 0.4rem 1rem;
+            padding: 0.3rem 1rem;
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.05);
             flex-wrap: wrap;
@@ -93,12 +95,12 @@
         .rule-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .dot-icon {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
         }
 
@@ -112,20 +114,20 @@
             opacity: 0.7;
         }
 
+        /* --- Main Game Container --- */
         .game-container {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            max-width: 500px;
+            /* Grow to fill remaining space between header and bottom of screen */
+            flex-grow: 1; 
             width: 100%;
+            max-width: 500px;
+            margin: 0 auto; /* Center on desktop */
             background: var(--panel-color);
-            padding: 1.5rem;
-            border-radius: 20px;
+            padding: 1rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             animation: fadeInUp 0.8s ease;
-            flex-grow: 1;
-            max-height: 85vh;
-            overflow: hidden;
+            overflow: hidden; /* Contains the scrollable board */
         }
 
         /* --- The Board (Guesses) --- */
@@ -133,9 +135,11 @@
             display: flex;
             flex-direction: column-reverse; /* BOTTOM-UP LAYOUT */
             gap: 0.8rem;
+            /* Fill remaining vertical space inside container */
+            flex-grow: 1; 
             overflow-y: auto;
             padding: 0.5rem;
-            padding-right: 8px;
+            padding-right: 8px; /* Space for scrollbar */
             scroll-behavior: smooth;
             scrollbar-width: thin;
             scrollbar-color: var(--accent-color) var(--panel-color);
@@ -221,27 +225,28 @@
         .dot.white { background-color: var(--c-orange); opacity: 0.7; }
         .dot.empty { background-color: transparent; }
 
-        /* --- Controls --- */
+        /* --- Controls Area --- */
         .controls-area {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.8rem;
             border-top: 1px solid rgba(255,255,255,0.1);
             padding-top: 1rem;
-            flex-shrink: 0;
-            margin-top: auto;
+            /* Prevent shrinking - crucial for mobile visibility */
+            flex-shrink: 0; 
+            background-color: var(--panel-color);
         }
 
         .color-picker {
             display: flex;
             justify-content: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
             flex-wrap: wrap;
         }
 
         .color-btn {
-            width: 2.2rem;
-            height: 2.2rem;
+            width: 2rem;
+            height: 2rem;
             border-radius: 50%;
             border: 2px solid rgba(255,255,255,0.2);
             cursor: pointer;
@@ -325,11 +330,11 @@
 
         .modal-content {
             background: var(--panel-color);
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 20px;
             text-align: center;
-            max-width: 90%;
-            width: 400px;
+            width: 90%;
+            max-width: 400px;
             transform: translateY(20px);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid var(--accent-color);
@@ -340,7 +345,7 @@
         }
 
         .modal-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 1rem;
             color: var(--text-color);
         }
@@ -356,8 +361,8 @@
         }
 
         .secret-peg {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.2rem;
+            height: 2.2rem;
             border-radius: 50%;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             animation: popIn 0.5s ease backwards;
@@ -392,20 +397,35 @@
             100% { transform: scale(1); }
         }
 
-        /* --- Mobile Adjustments --- */
+        /* --- Mobile Specific Fixes --- */
         @media (max-width: 500px) {
-            h1 { font-size: 1.8rem; }
-            :root { --peg-size: 2rem; }
-            .game-container { 
-                padding: 1rem; 
-                border-radius: 0; 
-                max-height: 100vh; 
-                height: 100vh;
+            body {
+                background: var(--panel-color); /* Match container for seamless look */
             }
+            
+            h1 { font-size: 1.6rem; }
+            :root { --peg-size: 2rem; --gap: 0.5rem; }
+            
+            .game-container { 
+                padding: 0.5rem 0.5rem 1rem 0.5rem;
+                border-radius: 0; 
+                box-shadow: none;
+                max-width: 100%;
+            }
+
+            .header {
+                padding-bottom: 0;
+            }
+
             .rules {
                 flex-direction: column;
-                gap: 0.5rem;
-                font-size: 0.7rem;
+                gap: 0.3rem;
+                font-size: 0.65rem;
+            }
+
+            .color-btn {
+                width: 1.8rem;
+                height: 1.8rem;
             }
         }
     </style>
@@ -518,7 +538,6 @@
             
             // SCROLL LOGIC FOR BOTTOM-UP:
             // With column-reverse, the visual bottom is the DOM start (scrollTop 0).
-            // We scroll to 0 to ensure Row 0 is visible at the bottom.
             boardEl.scrollTop = 0; 
             
             console.log("Secret (for debugging):", secretCode); 
